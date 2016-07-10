@@ -1,0 +1,128 @@
+#!/usr/bin/perl
+# vim: ft=perl ts=4 sw=4 expandtab
+#
+# date: <%= datetime.strftime('%c') %>
+
+use strict;
+
+#
+# Modules
+#
+
+use Getopt::Long;
+use File::Basename;
+use Pod::Usage;
+
+# Overload builtins to trap errors
+# and die with a message
+eval 'use autodie qw{open close};';
+if ($@) { use Fatal qw{open close}; }
+eval 'use IPC::System::Simple qw{system capture};';
+
+#
+# Init
+#
+my $script = basename($0);
+
+# GetConfig('/config/file');
+
+# Parse options and print usage if there is a syntax error,
+# or if usage was explicitly requested.
+GetOptions(
+    'help|?' => \my $help,
+    'man'    => \my $man,
+) or pod2usage(2);
+system q{which perldoc > /dev/null 2>&1};
+pod2usage( -verbose   => 1 ) if $help;
+pod2usage( -verbose   => 2,
+           -noperldoc => $? != 0 ) if $man;
+
+#
+# Main
+#
+
+
+#
+# Subs
+#
+
+# This subroutine makes all command line options available
+# in the "$conffile" confguration file. It formats and adds
+# the contents of nagios_trapd.conf and places them into
+# @ARGV
+sub GetConfig {
+    my ($file) = @_;
+
+    my $fh = IO::File->new( $file ) or return 0;
+
+    my $line;
+    while ( $line = <$fh> )
+    {
+        next if not defined $line;
+        chomp $line;
+        $line =~ s/#.+//;
+        if ($line =~ s/\\$//)
+        {
+            $line .= <$fh>;
+            redo unless eof $fh;
+        }
+
+        next if not $line =~ s/^(\S+)(.*)$/$2/;
+        my $opt = "-$1";
+        my @args = ( $line =~ m/(\S+)/g );
+        if( @args )
+        {
+            for(@args) {
+                push @ARGV, $opt, $_;
+            }
+        }
+        else {
+            push @ARGV, $opt;
+        }
+    }
+
+    return 1;
+}
+
+__END__
+
+=pod
+
+=head1 NAME
+
+<%= project.name %> - Brief on <%= project.name %>
+
+=head1 SYNOPSIS
+
+<%= project.name %> [options] [arguments]
+
+ Options:
+   --help            brief help message
+   --man             full documentation
+
+=head1 OPTIONS
+
+=over 8
+
+=item B<--help|-?>
+
+Print a brief help message and exits.
+
+=item B<--man>
+
+Prints the manual page and exits.
+
+=back
+
+=head1 DESCRIPTION
+
+B<<%= project.name %>> will read the given input file(s) and do something
+useful with the contents thereof.
+
+=cut
+
+=head1 AUTHOR
+
+<%= personal.name %>
+
+=cut

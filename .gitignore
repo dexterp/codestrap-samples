@@ -1,0 +1,6 @@
+.idea/
+bin/*
+objects/github.py
+objects/github.rb
+objects/personal.py
+objects/personal.rb

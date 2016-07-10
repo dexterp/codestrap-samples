@@ -1,0 +1,10 @@
+Codestrapfile.config do |conf|
+  # Base directory or list of base directories that contain "object" and "content" sub directories
+  # Defaults to $HOME/.codestrap
+  #conf.local.base   = [ '/home/user/.codestrap', '/usr/local/codestrap' ]
+  #conf.local.base = '/usr/local/codestrap'
+
+  # Ignore paths or list of paths to ignore
+  #conf.local.ignore = [ '.git', '.svn' ]
+  #conf.local.ignore = '.git'
+end
